@@ -1,0 +1,18 @@
+#:import WindowManager modules.Main.windowManager.WindowManager
+#:import MainWindow modules.Main.mainWindow.MainWindow
+#:import DailyManager modules.Daily.dailyManager.DailyManager
+
+WindowManager:
+    MainWindow:
+    DailyManager:
+
+<MainWindow>
+    name: "Main"
+    Button:
+        text: "DailyManager"
+        on_release: 
+            app.root.current = "Daily"
+
+
+
+    

@@ -1,0 +1,4 @@
+.vscode
+
+kivy_venv
+__pycache__/

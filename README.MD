@@ -1,6 +1,6 @@
 # Schematize 
 
-A small project aimed to improve my Python knowledge, probably, in the most inefficient and random way possible. First time using Tkinter (as of 24/11/22, I watched 10 minutes of videos about it), and I don't even know if it's appropriate for this project or not.
+A small project aimed to improve my Python knowledge, probably, in the most inefficient and random way possible. First time using <s>Tkinter</s> Kivy and I don't even know if it's appropriate for this project or not.
 
 A desktop app to put my life in schemes. Usually, I create these different types of schemes by hand, the majority on a lot of chaotic pieces of paper and only a few in a more organized "quadernetto" (notebook). Unfortunately, the "quadernetto"  has only a finite number of pages. 
 
