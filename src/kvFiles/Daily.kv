@@ -1,27 +1,36 @@
 <DailyBlock>
-    hour_range: hour_range
-    activities: activities
-
     cols: 2
+    activities: activities
     
     Label:
-        id: hour_range 
-        text: "8:00-22:00"
+        text: root.range_hour_text
     TextInput:
         id: activities
 
+
 <DailyManager>
     name: "Daily"
+    grid: grid
 
     GridLayout:
+        id: grid
         cols:1
 
-        Label:
-            text: "Today"
-        
-        DailyBlock:
-            
-        Label: 
-            text: "Options"
+        GridLayout:
+            cols:3
 
-    
+            Button:
+                text: "yesterday"
+                on_release: root.change_day(False)
+            Label:
+                text: root.date_label
+            Button:
+                text: "tomorrow"
+                on_release: root.change_day(True)
+
+        Button:
+            text: "Back"
+            on_release: root.go_back()
+            
+
+
