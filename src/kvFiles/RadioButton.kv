@@ -1,0 +1,10 @@
+<RadioButton>
+    cols:2
+    checkbox: checkbox
+
+    Label:
+        text: root.label_text
+    CheckBox:
+        id: checkbox
+        group: root.group
+        on_active: root.on_selected(root.data)

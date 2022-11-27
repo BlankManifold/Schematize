@@ -1,7 +1,7 @@
 <DailyBlock>
     cols: 2
     activities: activities
-    
+
     Label:
         text: root.range_hour_text
     TextInput:
@@ -11,6 +11,7 @@
 <DailyManager>
     name: "Daily"
     grid: grid
+    separation_options: separation_options
 
     GridLayout:
         id: grid
@@ -27,10 +28,12 @@
             Button:
                 text: "tomorrow"
                 on_release: root.change_day(True)
-
-        Button:
-            text: "Back"
-            on_release: root.go_back()
-            
-
-
+                
+        GridLayout:
+            cols:2            
+            BoxLayout:
+                id: separation_options
+                orientation: 'horizontal'           
+            Button:
+                text: "Back"
+                on_release: root.go_back()

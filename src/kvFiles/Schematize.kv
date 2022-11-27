@@ -7,12 +7,13 @@ WindowManager:
     MainWindow:
     DailyManager:
 
+#:set daily_screen_name "Daily"
+
 <MainWindow>
     name: "Main"
     Button:
         text: "DailyManager"
-        on_release: 
-            app.root.current = "Daily"
+        on_release: root.go_to(daily_screen_name)
 
 
     
