@@ -1,11 +1,26 @@
 <DailyBlock>
-    cols: 2
-    activities: activities
+    cols: 3
+    text_input: text_input
+    add_button: add_button
+    remove_button: remove_button
 
     Label:
+        size_hint_max_x: 200
         text: root.range_hour_text
     TextInput:
-        id: activities
+        id: text_input
+        text: root.activities
+    
+    GridLayout:
+        cols: 2
+        size_hint_max_x: 200
+        Button:
+            id: add_button
+            text: "add"
+        Button:
+            id: remove_button
+            text: "minus"
+
 
 
 <DailyManager>
@@ -33,7 +48,12 @@
             cols:2            
             BoxLayout:
                 id: separation_options
-                orientation: 'horizontal'           
-            Button:
-                text: "Back"
-                on_release: root.go_back()
+                orientation: 'horizontal'
+            GridLayout:
+                cols:2     
+                Button:
+                    text: "Back"
+                    on_release: root.go_back()
+                Button:
+                    text: "Save"
+                    on_release: root.save()

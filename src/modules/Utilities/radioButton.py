@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, TypeVar
 from kivy.uix.gridlayout import GridLayout
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
@@ -10,7 +10,8 @@ class RadioButton(GridLayout):
 
     checkbox = ObjectProperty(None)
 
-    def __init__(self, label_text: str, group: str, data: object, *, on_selected: Callable, **kwargs):
+    T = TypeVar('T')
+    def __init__(self, label_text: str, group: str, data: T, *, on_selected: Callable[[T,bool],object], **kwargs) -> None:
         self.label_text = label_text
         self.group = group
         self.data = data
