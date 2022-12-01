@@ -1,4 +1,7 @@
 .vscode
+.DS_Store
 
 kivy_venv
 __pycache__/
+
+resource

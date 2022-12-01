@@ -1,12 +1,16 @@
+from __future__ import annotations
 from datetime import date, timedelta
 from typing import Iterator, Optional
+import itertools
 
 from modules.Daily.dailyBlock import DailyBlock
 from modules.Utilities.radioButton import RadioButton
+from modules.Utilities.saveManager import save_scheme_data
+from modules.Main.abstractScheme import SchemeScreen
+from modules.Utilities.saveManager import load_scheme_data_from_file
 
 from kivy.properties import ObjectProperty, StringProperty
 from kivy.lang import Builder
-from kivy.uix.screenmanager import Screen
 
 
 kv = Builder.load_file("kvFiles/Daily.kv")
@@ -20,46 +24,91 @@ def get_divisors(n: int) -> Iterator[int]:
     yield n
 
 
-class DailyManager(Screen):
+class DailyManager(SchemeScreen):
 
     grid = ObjectProperty(None)
     date_label = StringProperty(None)
     separation_options = ObjectProperty(None)
 
-    def __init__(self, min_hour: int = 6, max_hour: int = 22, base_separation: int = 1, separations_list: Optional[list[int]] = None, **kwargs) -> None:
-        super(DailyManager, self).__init__(**kwargs)
+    def __init__(self, daily_date: date,  min_hour: int = 6, max_hour: int = 22, base_separation: int = 1, separations_list: Optional[list[int]] = None, activities: Optional[list[str]] = None, **kwargs) -> None:
 
-        if separations_list is not None:
-            pass
+        self._init(daily_date, min_hour, max_hour,
+                  base_separation, separations_list, activities)
+        super().__init__(**kwargs)
 
-        self.current_date = date.today()
+        self._init_blocks()
+
+    def _init(self,  daily_date: date, min_hour: int = 6, max_hour: int = 22, base_separation: int = 1, separations_list: Optional[list[int]] = None, activities: Optional[list[str]] = None):
+
+        self.saved = False
+        self.loaded = True
+
+        self.current_date = daily_date
         self.date_label = str(self.current_date)
         self.min_hour = timedelta(hours=min_hour)
         self.max_hour = timedelta(hours=max_hour)
         self.base_separation = timedelta(hours=base_separation)
-        self.num_blocks = int(
-            (self.max_hour - self.min_hour) / self.base_separation)
-        self.loaded = False
-        self.blocks = list[DailyBlock]()
 
-    def on_pre_enter(self) -> None:
-        if not self.loaded:
-            self.loaded = True
-            self.create_blocks()
-            self.load_separation_options()
+        if separations_list is not None:
+            num_blocks = len(separations_list)
+            self.separations = separations_list
+        else:
+            num_blocks = int((self.max_hour - self.min_hour) /
+                             self.base_separation)
+            self.separations = list(
+                itertools.repeat(base_separation, num_blocks))
+
+        if activities is not None:
+            self.activities = activities
+        else:
+            self.activities = list(itertools.repeat("", num_blocks))
+
+    def _init_blocks(self):
+        
+        self.blocks = list[DailyBlock]()
+        self._create_blocks()
+        self._bind_blocks()
+        self._load_separation_options()
+        self.init_dict_data()
+
+    @property
+    def identifier_key(self) -> str:
+        return self.date_label
+
+    @classmethod
+    def default_data(cls) -> dict:
+        dict_data = dict()
+        dict_data["base_separation"] = 1
+        dict_data["min_hour"] = 6
+        dict_data["max_hour"] = 21
+
+        num_blocks = (
+            dict_data["max_hour"] - dict_data["min_hour"]) // dict_data["base_separation"]
+        dict_data["activities"] = list(itertools.repeat("", num_blocks))
+        dict_data["separations"] = list(itertools.repeat(
+            dict_data["base_separation"], num_blocks))
+
+        return dict_data
 
     def go_back(self) -> None:
         self.manager.transition.direction = "right"
         self.manager.current = "Main"
 
-    def create_blocks(self) -> None:
-        for i in range(self.num_blocks):
-            begin = self.min_hour+i*self.base_separation
-            end = begin+self.base_separation
+    def _create_blocks(self) -> None:
 
-            block = DailyBlock(i, [begin, end])
-            self.grid.add_widget(block, index=1)
+        num_blocks = len(self.separations)
+        end = self.min_hour
+
+        for i in range(num_blocks):
+            begin = end
+            end = end + timedelta(hours=self.separations[i])
+
+            block = DailyBlock(i, [begin, end], self.activities[i])
             self.blocks.append(block)
+
+    def _bind_blocks(self) -> None:
+        for block in self.blocks:
+            self.grid.add_widget(block, index=1)
 
             block.add_button.bind(on_release=lambda instance: self.add_block(
                 instance.parent.parent.pos_id))
@@ -155,21 +204,29 @@ class DailyManager(Screen):
             block.clean()
 
     def change_day(self, next: bool) -> None:
+        
+        for block in self.blocks:
+            self.grid.remove_widget(block)
+        self.separation_options.clear_widgets()
+
         self.current_date = self.current_date + timedelta(days=int(next)*2-1)
         self.date_label = str(self.current_date)
-        self.clear_blocks()
+
+        self.init_from_file(self.date_label)
+
+        
 
     def update_separation(self, value: int) -> None:
 
         self.base_separation = timedelta(hours=value)
 
-        from_n = self.num_blocks
+        from_n = len(self.blocks)
         to_n = int((self.max_hour - self.min_hour) / self.base_separation)
 
         if from_n == to_n:
             return
 
-        self.num_blocks = to_n
+        # self.num_blocks = to_n
         if to_n - from_n > 0:
             self.add_blocks(from_n, to_n)
             return
@@ -182,14 +239,13 @@ class DailyManager(Screen):
 
         self.update_separation(value)
 
-    def load_separation_options(self) -> None:
+    def _load_separation_options(self) -> None:
 
         total_range_hour = int(
             (self.max_hour - self.min_hour).total_seconds() // 3600)
         divisors = get_divisors(total_range_hour)
 
         for div in divisors:
-
             radioButton = RadioButton(
                 str(div), "separation_options", div, on_selected=self.on_selected)
             self.separation_options.add_widget(radioButton)
@@ -197,6 +253,51 @@ class DailyManager(Screen):
             if (div == int(self.base_separation.total_seconds() // 3600)):
                 radioButton.checkbox.active = True
 
-    def save(self) -> None:
+    def save_data(self) -> None:
         for block in self.blocks:
             block.save_text()
+        self.init_dict_data()
+        save_scheme_data(self)
+
+    def init_from_file(self, indetifier_key: str) -> None:
+        
+        data = load_scheme_data_from_file(type(self), indetifier_key)
+        min_hour = data["min_hour"]
+        max_hour = data["max_hour"]
+
+        base_separation = data["base_separation"]
+        separations = data["separations"]
+        activities = data["activities"]
+
+        self._init(self.current_date, min_hour, max_hour,
+                  base_separation, separations, activities)
+        self._init_blocks()
+
+    def init_dict_data(self) -> None:
+        self.dict_data["base_separation"] = int(
+            self.base_separation.total_seconds() // 3600)
+        self.dict_data["min_hour"] = int(self.min_hour.total_seconds() // 3600)
+        self.dict_data["max_hour"] = int(self.max_hour.total_seconds() // 3600)
+
+        self.dict_data["activities"] = list[str]()
+        for block in self.blocks:
+            self.dict_data["activities"].append(block.activities)
+
+        self.dict_data["separations"] = list[int]()
+        for block in self.blocks:
+            self.dict_data["separations"].append(block.range_hour_int)
+
+    @classmethod
+    def create_from_data(cls, data: dict, data_label: str) -> DailyManager:
+
+        min_hour = data["min_hour"]
+        max_hour = data["max_hour"]
+
+        base_separation = data["base_separation"]
+        separations = data["separations"]
+        activities = data["activities"]
+
+        dailyManager = cls(date.today(), min_hour, max_hour,
+                           base_separation, separations, activities)
+
+        return dailyManager

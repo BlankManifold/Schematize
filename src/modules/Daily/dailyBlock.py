@@ -15,9 +15,9 @@ class DailyBlock(GridLayout):
     remove_button = ObjectProperty(None)
 
 
-    def __init__(self, pos_id:int, range_hour: list[timedelta], activities: str = "Ciao", **kwargs) -> None:
+    def __init__(self, pos_id:int, range_hour: list[timedelta], activities: str = "", **kwargs) -> None:
         self.pos_id = pos_id
-        self.activities = str(pos_id)
+        self.activities = activities
         self.range_hour_text = ""
         self.range_hour = range_hour
         super(DailyBlock, self).__init__(**kwargs)
