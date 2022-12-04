@@ -8,7 +8,7 @@ A desktop app to put my life in schemes. Usually, I create these different types
 
 1. Time dependent: 
     - [ ] A simple summary calendar
-    - [ ] Daily routine, activities, and tasks manager
+    - [X] Daily routine, activities, and tasks manager (ONLY BASE/MINIMAL FEATURES) 
     - [ ] Weekly activities manager
     - [ ] More long-term goals/duty manager
     - [ ] Create short sessions (less than 24 hours, greater than 1 minute) plan to follow (like for study or workout)
