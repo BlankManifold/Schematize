@@ -1,0 +1,25 @@
+<SpinBox>
+    cols:2
+    size_hint_max_y: 30
+    size_hint_max_x: 100
+
+    GridLayout:
+        rows: 2
+        
+        Label:
+            text: root.label_text
+        TextInput:
+            multiline:False
+            text: str(root.current_value)
+            on_text_validate: root.on_input_value(self.text)
+    
+    GridLayout:
+        rows:2
+    
+        Button:
+            text: "+"
+            on_press: root.on_up()
+        Button:
+            text: "-"
+            on_press: root.on_down()
+

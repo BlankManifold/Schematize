@@ -16,6 +16,6 @@ class RadioButton(GridLayout):
         self.group = group
         self.data = data
         self.on_selected = on_selected
-
+        
         super(RadioButton, self).__init__(**kwargs)
     

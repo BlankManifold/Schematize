@@ -26,6 +26,7 @@
 <DailyManager>
     name: "Daily"
     grid: grid
+    range_options: range_options
     separation_options: separation_options
 
     GridLayout:
@@ -37,26 +38,40 @@
 
             Button:
                 text: "yesterday"
-                on_release: root.change_day(False)
+                on_release: root.on_change_day(False)
             Label:
                 text: root.date_label
             Button:
                 text: "tomorrow"
-                on_release: root.change_day(True)
+                on_release: root.on_change_day(True)
                 
         GridLayout:
-            cols:3          
-            BoxLayout:
-                id: separation_options
-                orientation: 'horizontal'
+            cols:2
             GridLayout:
-                cols:2     
+                cols:3
+                BoxLayout:
+                    id: range_options
+                    orientation: 'horizontal'
+
+                    Button:
+                        text: "Apply"
+                        on_press: root.on_change_range()
+                BoxLayout:
+                    id: separation_options
+                    orientation: 'horizontal'
+            GridLayout:
+                cols:3    
                 Button:
+                    size_hint_max_x:100
                     text: "Back"
-                    on_release: root.go_back()
+                    on_release: root.on_go_back()
                 Button:
+                    size_hint_max_x:100
+
                     text: "Clear"
-                    on_release: root.clear_blocks()
+                    on_release: root.on_clear_blocks()
                 Button:
+                    size_hint_max_x:100
+
                     text: "Save"
-                    on_release: root.save_data()
+                    on_release: root.on_save()

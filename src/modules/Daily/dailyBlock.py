@@ -24,14 +24,14 @@ class DailyBlock(GridLayout):
 
     def __repr__(self) -> str:
         return f"{self.range_hour_text} {self.activities}"
-
+    
     @property
     def range_hour(self) -> list[timedelta]:
         return self._range_hour
     
-    @property
-    def pos_id(self) -> int:
-        return self._pos_id
+    # @property
+    # def pos_id(self) -> int:
+    #     return self._pos_id
         
     @property
     def range_hour_int(self) -> int:
@@ -42,11 +42,20 @@ class DailyBlock(GridLayout):
         self._range_hour = value
         self.update_range_text()
     
-    @pos_id.setter
-    def pos_id(self, value: int) -> None:
-        self._pos_id = value
-        self.activities = str(self.pos_id)
+    # @pos_id.setter
+    # def pos_id(self, value: int) -> None:
+    #     self._pos_id = value
+    #     self.activities = str(self.pos_id)
     
+    def cover(self, hour:timedelta) -> bool:
+        return self.range_hour[0] < hour < self.range_hour[1]
+    
+    def isbefore(self, hour:timedelta) -> bool:
+        return self.range_hour[1] <= hour 
+    
+    def isafter(self, hour:timedelta) -> bool:
+        return self.range_hour[0] >= hour 
+
     def compose_with(self, other: DailyBlock) -> None:
         added_activities = f"{self.activities}\n{other.activities}"
         self.activities = added_activities
