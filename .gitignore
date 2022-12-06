@@ -5,3 +5,7 @@ kivy_venv
 __pycache__/
 
 resource
+
+build/
+dist/
+*.spec

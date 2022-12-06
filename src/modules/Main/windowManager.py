@@ -6,8 +6,6 @@ from modules.Daily.dailyManager import DailyManager
 from modules.Main.mainWindow import MainWindow  
 
 from kivy.uix.screenmanager import ScreenManager
-from kivy.properties import ObjectProperty
-
 
 def create_scheme_from_file(scheme_type: type, identifier_key: str) -> SchemeScreen:
 
